@@ -1,0 +1,46 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Две колонки равной ширины */
+    grid-template-rows: auto auto auto; /* Три строки */
+    gap: 20px; /* Расстояние между ячейками */
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo-cell {
+    grid-column: 1 / span 2; /* Занимает обе колонки */
+    text-align: center; /* Выравнивание по центру */
+}
+
+.logo {
+    max-width: 300px;
+    height: auto;
+}
+
+.image-cell img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.button-cell {
+    display: flex;
+    justify-content: center;
+}
+
+.grid-button {
+    padding: 12px 24px;
+    background-color: #323232;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.grid-button:hover {
+    background-color: #555;
+}
