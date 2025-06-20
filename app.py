@@ -1,25 +1,27 @@
 from flask import Flask, render_template, session, redirect, url_for, abort, request, flash
 from flask_login import LoginManager, UserMixin, login_required, current_user
+from models import db, User
 
 from datetime import datetime
 
 app = Flask(__name__)
 application = app
 
-app.config.from_pyfile('config.py')
+app.config.from_object('config.Config')
 
-login_manager = LoginManager()
+db.init_app(app)
+login_manager = LoginManager(app)
 login_manager.init_app(app)
 login_manager.login_view = 'auth'
 
-class User(UserMixin):
-    pass
-
 @login_manager.user_loader
 def load_user(user_id):
-    user = User()
-    user.id = user_id
-    return user
+    return User.query.get(int(user_id))
+
+@app.cli.command('init-db')
+def init_db():
+    db.create_all()
+    print('База данных создана')
 
 def calculate_nights(check_in, check_out):
     fmt = '%Y-%m-%d'
@@ -83,14 +85,33 @@ def calendar():
 
 @app.route('/process-booking', methods=['POST'])
 def process_booking():
-    session['check_in'] = request.form.get('check_in')
-    session['check_out'] = request.form.get('check_out')
+    from models import Booking, Room
+    from datetime import datetime
     
+    check_in = request.form.get('check_in')
+    check_out = request.form.get('check_out')
+    room_type = session.get('selected_room')
+    
+    room = Room.query.filter(Room.name.contains([room_type])).first()
+    
+    if not room:
+        flash('Номер не найден', 'error')
+        return redirect(url_for('rooms'))
+
+    new_booking = Booking(
+        check_in_date=datetime.strptime(check_in, '%Y-%m-%d').date(),
+        check_out_date=datetime.strptime(check_out, '%Y-%m-%d').date(),
+        guests_count=2,
+        total_price=calculate_price(room_type, check_in, check_out),
+        user_id=current_user.id_user if current_user.is_authenticated else None,
+        room_id=room.id_room
+    )
+    
+    db.session.add(new_booking)
+    db.session.commit()
+    
+    session['booking_id'] = new_booking.id_booking
     return redirect(url_for('confirmation'))
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('confirmation'))
-    # else:
-    #     return redirect(url_for('back_auth'))
 
 @app.route('/back-auth')
 def back_auth():
