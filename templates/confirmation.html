@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Подтверждение бронирования{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/confirmation.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-grid">
+    <!-- Первый ряд (объединенные столбцы) -->
+    <div class="header-row">
+        <h1>Подтверждение бронирования</h1>
+        <p class="subtitle">Проверьте правильность введенных данных</p>
+    </div>
+
+    <!-- Второй ряд (2 колонки) -->
+    <div class="booking-details">
+        <h2>Детали бронирования</h2>
+        <div class="details-card">
+            <div class="detail-item">
+                <span class="detail-label">Тип номера:</span>
+                <span class="detail-value">{{ booking.room_type or "Люкс" }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Даты:</span>
+                <span class="detail-value">{{ booking.check_in }} – {{ booking.check_out }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Количество ночей:</span>
+                <span class="detail-value">{{ booking.nights }} ({{ booking.total_price }} ₽)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="user-info">
+        <h2>Ваши данные</h2>
+        <div class="info-card">
+            <div class="info-item">
+                <span class="info-label">ФИО:</span>
+                <span class="info-value">{{ current_user.full_name or "Иванов Иван Иванович" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ current_user.email or "ivanov@example.com" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Телефон:</span>
+                <span class="info-value">{{ current_user.phone or "+7 (900) 123-45-67" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Третий ряд (объединенные столбцы) -->
+    <div class="action-row">
+        <form action="{{ url_for('process_booking') }}" method="POST">
+            <button type="submit" class="confirm-button">Подтвердить бронирование</button>
+        </form>
+        <p class="notice">После подтверждения на указанную почту придет письмо с деталями бронирования</p>
+    </div>
+</div>
+{% endblock %}

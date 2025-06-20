@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Выбор даты{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/calendar.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="calendar-grid">
+    <!-- Первый ряд -->
+    <div class="logo-row">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Логотип" class="logo">
+    </div>
+
+    <!-- Второй ряд -->
+    <div class="calendar-container">
+        <h2>Выберите даты проживания</h2>
+        <input type="text" id="datepicker" placeholder="Выберите даты...">
+        <div id="booking-errors" class="error-message"></div>
+    </div>
+
+    <div class="selection-summary">
+        <h2>Ваше бронирование:</h2>
+        <div class="summary-card">
+            <p><strong>Тип номера:</strong> {{ session.get('selected_room', 'не выбран') }}</p>
+            <p><strong>Даты:</strong> <span id="selected-dates">не выбраны</span></p>
+            <p><strong>Ночей:</strong> <span id="nights-count">0</span></p>
+        </div>
+    </div>
+
+    <!-- Третий ряд -->
+    <div class="action-row">
+        <form id="booking-form" action="{{ url_for('process_booking') }}" method="POST">
+            <input type="hidden" name="room_type" value="{{ session.get('selected_room') }}">
+            <input type="hidden" name="check_in" id="check-in-input">
+            <input type="hidden" name="check_out" id="check-out-input">
+            <button type="submit" class="next-button">Далее →</button>
+        </form>
+    </div> 
+</div>
+
+<!-- Flatpickr + локаль -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Заглушка для занятых дат (в реальном приложении заменить на fetch)
+    const bookedDates = [
+        "2025-07-15", "2025-07-16", "2025-07-17",  // Отдельные даты
+        { from: "2025-08-01", to: "2025-08-10" }    // Диапазон
+    ];
+
+    // Инициализация календаря
+    const datepicker = flatpickr("#datepicker", {
+        locale: "ru",
+        mode: "range",
+        minDate: "today",
+        dateFormat: "d.m.Y",
+        disable: bookedDates,
+        onChange: function(selectedDates) {
+            if (selectedDates.length === 2) {
+                const formatDate = (date) => date.toISOString().split('T')[0];
+                const checkIn = selectedDates[0];
+                const checkOut = selectedDates[1];
+                const nights = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
+                
+                // Отображение
+                document.getElementById('selected-dates').textContent = 
+                    `${datepicker.formatDate(checkIn, 'd.m.Y')} - ${datepicker.formatDate(checkOut, 'd.m.Y')}`;
+                document.getElementById('nights-count').textContent = nights;
+                
+                // Заполнение скрытых полей формы
+                document.getElementById('check-in-input').value = formatDate(checkIn);
+                document.getElementById('check-out-input').value = formatDate(checkOut);
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -18,10 +18,10 @@
             <img src="{{ url_for('static', filename='images/room.jpg') }}" alt="Изображение 2">
         </div>
         <div class="button-cell">
-            <button class="grid-button">date select</button>
+            <button class="grid-button" onclick="window.location.href='{{ url_for('calendar') }}'">date select</button>
         </div>
         <div class="button-cell">
-            <button class="grid-button">select room</button>
+            <button class="grid-button" onclick="window.location.href='{{ url_for('rooms') }}'">select room</button>
         </div>
     </div>
 {% endblock %}

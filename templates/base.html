@@ -11,8 +11,13 @@
     <div class="page-wrapper">
         <div class="content-wrapper">
             <header>
-                <button>auth</button>
-                <button>about the hotel</button>
+                {% set special_pages = ['auth', 'about_hotel', 'calendar', 'rooms', 'back_auth', 'confirmation'] %}
+                {% if request.endpoint in special_pages %}
+                    <button onclick="window.location.href='{{ url_for('index') }}'">main page</button>
+                {% else %}
+                    <button onclick="window.location.href='{{ url_for('auth') }}'">auth</button>
+                    <button onclick="window.location.href='{{ url_for('about_hotel') }}'">about the hotel</button>
+                {% endif %}
             </header>
 
             <main class="main-content">

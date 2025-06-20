@@ -1,0 +1,27 @@
+.auth-required-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.auth-message {
+    max-width: 500px;
+    padding: 2rem;
+}
+
+.auth-button {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #4a6fa5;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+.auth-button:hover {
+    background-color: #3a5a80;
+}

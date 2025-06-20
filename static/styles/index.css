@@ -1,16 +1,16 @@
 .grid-container {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Две колонки равной ширины */
-    grid-template-rows: auto auto auto; /* Три строки */
-    gap: 20px; /* Расстояние между ячейками */
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 20px;
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
 .logo-cell {
-    grid-column: 1 / span 2; /* Занимает обе колонки */
-    text-align: center; /* Выравнивание по центру */
+    grid-column: 1 / span 2; 
+    text-align: center;
 }
 
 .logo {
