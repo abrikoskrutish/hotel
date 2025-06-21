@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Выбор номера{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/rooms.css') }}">
+{% endblock %}
+
+{% block content %}
+    <form class="room-form" action="{{ url_for('save_room_after_dates') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="rooms-grid">
+            <div class="logo-row">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Логотип отеля" class="logo">
+            </div>
+
+            <div class="room-selection">
+                <h2>Выберите номер на {{ check_in }} - {{ check_out }} ({{ nights }} ночей)</h2>
+                <div class="room-options">
+                    {% for room in rooms %}
+                    <label class="room-option">
+                        <input type="radio" name="room-type" value="{{ room.room_type }}" required>
+                        <div class="room-card">
+                            <h3>{{ room.name }}</h3>
+                            <p>{{ room.description }}</p>
+                            <p class="price">{{ room.price_per_night }} ₽/ночь</p>
+                            <p class="total-price">Итого: {{ room.price_per_night * nights }} ₽</p>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="selection-result">
+                <h2>Ваш выбор:</h2>
+                <div id="selected-room" class="selected-room-display">
+                    <p>Пожалуйста, выберите тип номера</p>
+                </div>
+            </div>
+
+            <div class="next-button-row">
+                <button type="submit" class="next-button">Подтвердить →</button>
+            </div>
+        </div>
+
+        <script>
+            document.querySelectorAll('input[name="room-type"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const selectedText = this.parentElement.querySelector('h3').textContent;
+                    const priceText = this.parentElement.querySelector('.price').textContent;
+                    const totalText = this.parentElement.querySelector('.total-price').textContent;
+                    document.getElementById('selected-room').innerHTML = `
+                        <h3>${selectedText}</h3>
+                        <p>${priceText}</p>
+                        <p>${totalText}</p>
+                    `;
+                });
+            });
+        </script>
+    </form>
+{% endblock %}

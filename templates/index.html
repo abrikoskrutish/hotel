@@ -8,20 +8,40 @@
 
 {% block content %}
     <div class="grid-container">
+        <!-- Логотип в отдельной строке -->
         <div class="logo-cell">
-            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Логотип" class="logo">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Логотип отеля" class="logo">
         </div>
-        <div class="image-cell">
-            <img src="{{ url_for('static', filename='images/calendar.jpg') }}" alt="Изображение календаря">
+
+        <!-- Два варианта бронирования -->
+        <div class="booking-option">
+            <div class="image-cell">
+                <img src="{{ url_for('static', filename='images/room.jpg') }}" alt="Выбор номера">
+            </div>
+            <div class="option-content">
+                <h3>Сначала номер, потом даты</h3>
+                <p>Выберите понравившийся номер, а затем укажите даты проживания</p>
+            </div>
+            <div class="button-cell">
+                <button class="grid-button" onclick="window.location.href='{{ url_for('rooms') }}'">
+                    Выбрать номер →
+                </button>
+            </div>
         </div>
-        <div class="image-cell">
-            <img src="{{ url_for('static', filename='images/room.jpg') }}" alt="Изображение 2">
-        </div>
-        <div class="button-cell">
-            <button class="grid-button" onclick="window.location.href='{{ url_for('calendar') }}'">date select</button>
-        </div>
-        <div class="button-cell">
-            <button class="grid-button" onclick="window.location.href='{{ url_for('rooms') }}'">select room</button>
+
+        <div class="booking-option">
+            <div class="image-cell">
+                <img src="{{ url_for('static', filename='images/calendar.jpg') }}" alt="Выбор дат">
+            </div>
+            <div class="option-content">
+                <h3>Сначала даты, потом номер</h3>
+                <p>Укажите желаемые даты, а затем выберите из доступных номеров</p>
+            </div>
+            <div class="button-cell">
+                <button class="grid-button" onclick="window.location.href='{{ url_for('start_with_dates') }}'">
+                    Выбрать даты →
+                </button>
+            </div>
         </div>
     </div>
 {% endblock %}

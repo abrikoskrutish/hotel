@@ -79,6 +79,9 @@ def index():
 
 @app.route('/auth', methods=['GET', 'POST'])
 def auth():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
     form = LoginForm()
     
     if form.validate_on_submit():
@@ -86,9 +89,8 @@ def auth():
         
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember.data)
-            flash(f'Добро пожаловать, {user.login}!', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('index'))
+            next_page = session.pop('next', None) or url_for('index')
+            return redirect(next_page)
         else:
             flash('Неверный логин или пароль', 'error')
     
@@ -141,6 +143,11 @@ def rooms():
 @app.route('/confirmation')
 @login_required
 def confirmation():
+    if not current_user.is_authenticated:
+        flash('Для завершения бронирования необходимо войти в систему', 'warning')
+        session['next'] = url_for('confirmation')
+        return redirect(url_for('auth'))
+
     required_keys = ['selected_room', 'selected_room_id', 'check_in', 'check_out']
     if not all(key in session for key in required_keys):
         flash('Пожалуйста, завершите процесс бронирования', 'warning')
@@ -275,6 +282,95 @@ def process_booking():
         app.logger.error(f'Ошибка при обработке бронирования: {str(e)}', exc_info=True)
         flash('Ошибка при обработке данных. Пожалуйста, попробуйте снова.', 'error')
         return redirect(url_for('calendar'))
+
+@app.route('/account')
+@login_required
+def account():
+    bookings = Booking.query.filter_by(user_id=current_user.id_user).order_by(Booking.check_in_date.desc()).all()
+    return render_template('account.html', bookings=bookings)
+
+@app.route('/start-with-dates')
+def start_with_dates():
+    for key in ['selected_room', 'selected_room_id', 'check_in', 'check_out', 'guests', 'room_price']:
+        session.pop(key, None)
+    return redirect(url_for('calendar_first'))
+
+@app.route('/calendar-first')
+def calendar_first():
+    return render_template('calendar_first.html')
+
+@app.route('/process-dates-first', methods=['POST'])
+def process_dates_first():
+    try:
+        from flask_wtf.csrf import validate_csrf
+        validate_csrf(request.form.get('csrf_token'))
+        
+        check_in = request.form.get('check_in')
+        check_out = request.form.get('check_out')
+        guests = request.form.get('guests', 1)
+        
+        if not check_in or not check_out:
+            flash('Укажите даты заезда и выезда', 'error')
+            return redirect(url_for('calendar_first'))
+        
+        try:
+            check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
+            check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
+            if check_out_date <= check_in_date:
+                flash('Дата выезда должна быть после даты заезда', 'error')
+                return redirect(url_for('calendar_first'))
+        except ValueError:
+            flash('Некорректный формат даты', 'error')
+            return redirect(url_for('calendar_first'))
+        
+        session['check_in'] = check_in
+        session['check_out'] = check_out
+        session['guests'] = int(guests)
+        return redirect(url_for('rooms_after_dates'))
+        
+    except Exception as e:
+        app.logger.error(f'Ошибка при обработке дат: {str(e)}', exc_info=True)
+        flash('Ошибка при обработке данных. Пожалуйста, попробуйте снова.', 'error')
+        return redirect(url_for('calendar_first'))
+
+@app.route('/rooms-after-dates')
+def rooms_after_dates():
+    if 'check_in' not in session or 'check_out' not in session:
+        flash('Сначала выберите даты проживания', 'warning')
+        return redirect(url_for('calendar_first'))
+    
+    rooms = Room.query.all()
+    nights = calculate_nights(session['check_in'], session['check_out'])
+    
+    return render_template('rooms_after_dates.html', 
+                         rooms=rooms,
+                         nights=nights,
+                         check_in=session['check_in'],
+                         check_out=session['check_out'])
+
+@app.route('/save-room-after-dates', methods=['POST'])
+def save_room_after_dates():
+    room_type = request.form.get('room-type')
+    if not room_type:
+        flash('Не выбран тип номера', 'error')
+        return redirect(url_for('rooms_after_dates'))
+    
+    try:
+        room = Room.query.filter(Room.room_type.ilike(room_type)).first()
+        
+        if not room:
+            flash(f'Номер типа "{room_type}" не найден в базе данных', 'error')
+            return redirect(url_for('rooms_after_dates'))
+        
+        session['selected_room'] = room.room_type
+        session['selected_room_id'] = room.id_room
+        session['room_price'] = room.price_per_night
+        return redirect(url_for('confirmation'))
+    
+    except Exception as e:
+        app.logger.error(f'Ошибка при выборе номера: {str(e)}', exc_info=True)
+        flash('Произошла ошибка при обработке вашего выбора', 'error')
+        return redirect(url_for('rooms_after_dates'))
 
 if __name__ == "__main__":
     app.run(debug=True)

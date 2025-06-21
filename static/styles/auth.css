@@ -103,6 +103,7 @@
     border-radius: 4px;
     color: white;
     animation: slideIn 0.5s forwards;
+    background: chocolate;
 }
 
 .alert-success {

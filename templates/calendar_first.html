@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Выбор дат{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/calendar.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="calendar-grid">
+    <div class="logo-row">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Логотип" class="logo">
+    </div>
+
+    <div class="calendar-container">
+        <h2>Выберите даты проживания</h2>
+        <form id="booking-form" method="POST" action="{{ url_for('process_dates_first') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" id="datepicker" placeholder="Выберите даты...">
+            <input type="hidden" name="check_in" id="check-in-input">
+            <input type="hidden" name="check_out" id="check-out-input">
+            
+            <div class="form-group">
+                <label for="guests">Количество гостей:</label>
+                <input type="number" id="guests" name="guests" min="1" max="4" value="1">
+            </div>
+            
+            <button type="submit" class="next-button" style="margin-top: 10px;">Выбрать номер →</button>
+        </form>
+        <div id="booking-errors" class="error-message"></div>
+    </div>
+</div>
+
+<!-- Flatpickr -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const bookedDates = [
+        "2025-07-15", "2025-07-16", "2025-07-17",
+        { from: "2025-08-01", to: "2025-08-10" }
+    ];
+
+    const datepicker = flatpickr("#datepicker", {
+        locale: "ru",
+        mode: "range",
+        minDate: "today",
+        dateFormat: "d.m.Y",
+        disable: bookedDates,
+        onChange: function(selectedDates) {
+            if (selectedDates.length === 2) {
+                const formatDate = (date) => date.toISOString().split('T')[0];
+                const checkIn = selectedDates[0];
+                const checkOut = selectedDates[1];
+                
+                document.getElementById('check-in-input').value = formatDate(checkIn);
+                document.getElementById('check-out-input').value = formatDate(checkOut);
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

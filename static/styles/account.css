@@ -1,0 +1,25 @@
+.account-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.user-info, .bookings-list {
+    background-color: #fff;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.booking-card {
+    border: 1px solid #ddd;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    transition: box-shadow 0.3s;
+}
+
+.booking-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}

@@ -2,6 +2,42 @@
 
 {% block title %}О нас{% endblock %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/about-hotel.css') }}">
+{% endblock %}
+
 {% block content %}
-    Мы крутой отель
+<div class="about-hotel-wrapper">
+    <div class="about-hotel-logo">
+        <img class="logo" src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Baglioni Hotel Logo" class="hotel-logo">
+    </div>
+    <div class="about-hotel-info">
+        <div class="about-hotel-row">
+            <div class="about-hotel-image">
+                <img src="{{ url_for('static', filename='images/view-hotel.jpg') }}" alt="Внешний вид отеля">
+            </div>
+            <div class="about-hotel-description">
+                <h2>Baglioni Hotel</h2>
+                <p>
+                    Baglioni Hotel — современный отель, расположенный в самом сердце Анапы, всего в нескольких минутах ходьбы от пляжа и главных достопримечательностей города. Мы предлагаем комфортные номера, высокий уровень сервиса и уютную атмосферу для отдыха всей семьёй.
+                </p>
+            </div>
+        </div>
+        <div class="about-hotel-row">
+            <div class="about-hotel-description">
+                <h3>Удобства и сервис</h3>
+                <ul>
+                    <li>Бесплатный Wi-Fi на всей территории</li>
+                    <li>Ресторан с блюдами европейской кухни</li>
+                    <li>Бассейн и зона для отдыха</li>
+                    <li>Парковка для гостей</li>
+                    <li>Трансфер из аэропорта</li>
+                </ul>
+            </div>
+            <div class="about-hotel-image">
+                <img src="{{ url_for('static', filename='images/room-hotel.jpg') }}" alt="Номер отеля">
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

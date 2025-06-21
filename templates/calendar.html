@@ -16,6 +16,12 @@
     <div class="calendar-container">
         <h2>Выберите даты проживания</h2>
         <input type="text" id="datepicker" placeholder="Выберите даты...">
+        
+        <div class="form-group">
+            <label for="guests">Количество гостей:</label>
+            <input type="number" id="guests" name="guests" min="1" max="4" value="1">
+        </div>
+        
         <div id="booking-errors" class="error-message"></div>
     </div>
 
@@ -25,6 +31,7 @@
             <p><strong>Тип номера:</strong> {{ session.get('selected_room', 'не выбран') }}</p>
             <p><strong>Даты:</strong> <span id="selected-dates">не выбраны</span></p>
             <p><strong>Ночей:</strong> <span id="nights-count">0</span></p>
+            <p><strong>Гостей:</strong> <span id="guests-count">1</span></p>
         </div>
     </div>
 
@@ -34,6 +41,7 @@
             <input type="hidden" name="room_type" value="{{ session.get('selected_room') }}">
             <input type="hidden" name="check_in" id="check-in-input">
             <input type="hidden" name="check_out" id="check-out-input">
+            <input type="hidden" name="guests" id="guests-input" value="1">
             <button type="submit" class="next-button">Далее →</button>
         </form>
     </div> 
@@ -49,6 +57,16 @@ document.addEventListener('DOMContentLoaded', function() {
         "2025-07-15", "2025-07-16", "2025-07-17",
         { from: "2025-08-01", to: "2025-08-10" }
     ];
+
+    const guestsInput = document.getElementById('guests');
+    const guestsCount = document.getElementById('guests-count');
+    const guestsHiddenInput = document.getElementById('guests-input');
+    
+    guestsInput.addEventListener('change', function() {
+        const guests = this.value;
+        guestsCount.textContent = guests;
+        guestsHiddenInput.value = guests;
+    });
 
     const datepicker = flatpickr("#datepicker", {
         locale: "ru",

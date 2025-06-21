@@ -33,6 +33,26 @@
     margin-top: 15px;
 }
 
+.form-group {
+    margin-top: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
 .summary-card {
     background: #f8f9fa;
     padding: 20px;
@@ -53,10 +73,19 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.next-button:hover {
+    background: #3a5a8f;
 }
 
 @media (max-width: 768px) {
     .calendar-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .form-group {
+        margin-top: 15px;
     }
 }
