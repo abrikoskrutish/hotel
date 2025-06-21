@@ -8,45 +8,42 @@
 
 {% block content %}
     <form class="room-form" action="{{ url_for('save_room_choice') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="rooms-grid">
-            <!-- Первый ряд (объединенные столбцы) -->
             <div class="logo-row">
                 <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Логотип отеля" class="logo">
             </div>
 
-            <!-- Второй ряд (2 колонки) -->
             <div class="room-selection">
-                <form class="room-form">
-                    <h2>Выберите тип номера</h2>
-                    <div class="room-options">
-                        <label class="room-option">
-                            <input type="radio" name="room-type" value="standard" checked>
-                            <div class="room-card">
-                                <h3>Стандарт</h3>
-                                <p>Уютный номер с базовыми удобствами</p>
-                                <p class="price">от 2 500 ₽/ночь</p>
-                            </div>
-                        </label>
+                <h2>Выберите тип номера</h2>
+                <div class="room-options">
+                    <label class="room-option">
+                        <input type="radio" name="room-type" value="standard" checked>
+                        <div class="room-card">
+                            <h3>Стандарт</h3>
+                            <p>Уютный номер с базовыми удобствами</p>
+                            <p class="price">от 2 500 ₽/ночь</p>
+                        </div>
+                    </label>
 
-                        <label class="room-option">
-                            <input type="radio" name="room-type" value="comfort">
-                            <div class="room-card">
-                                <h3>Комфорт</h3>
-                                <p>Просторный номер с улучшенной мебелью</p>
-                                <p class="price">от 3 800 ₽/ночь</p>
-                            </div>
-                        </label>
+                    <label class="room-option">
+                        <input type="radio" name="room-type" value="comfort">
+                        <div class="room-card">
+                            <h3>Комфорт</h3>
+                            <p>Просторный номер с улучшенной мебелью</p>
+                            <p class="price">от 3 800 ₽/ночь</p>
+                        </div>
+                    </label>
 
-                        <label class="room-option">
-                            <input type="radio" name="room-type" value="luxury">
-                            <div class="room-card">
-                                <h3>Люкс</h3>
-                                <p>Роскошный номер с дополнительными услугами</p>
-                                <p class="price">от 6 200 ₽/ночь</p>
-                            </div>
-                        </label>
-                    </div>
-                </form>
+                    <label class="room-option">
+                        <input type="radio" name="room-type" value="luxury">
+                        <div class="room-card">
+                            <h3>Люкс</h3>
+                            <p>Роскошный номер с дополнительными услугами</p>
+                            <p class="price">от 6 200 ₽/ночь</p>
+                        </div>
+                    </label>
+                </div>
             </div>
 
             <div class="selection-result">
@@ -56,14 +53,12 @@
                 </div>
             </div>
 
-            <!-- Третий ряд (объединенные столбцы) -->
             <div class="next-button-row">
                 <button type="submit" class="next-button">Далее →</button>
             </div>
         </div>
 
         <script>
-            // Обновление информации о выбранном номере
             document.querySelectorAll('input[name="room-type"]').forEach(radio => {
                 radio.addEventListener('change', function() {
                     const selectedText = this.parentElement.querySelector('h3').textContent;

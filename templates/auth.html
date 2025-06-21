@@ -1,7 +1,58 @@
 {% extends 'base.html' %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/auth.css') }}">
+{% endblock %}
+
 {% block title %}Авторизация{% endblock %}
 
 {% block content %}
-    Авторизируйся
+<div class="auth-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="auth-row logo-row">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Логотип отеля" class="auth-logo">
+    </div>
+
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="auth-row">
+            <div class="input-group">
+                <label for="username">Логин</label>
+                <input type="text" id="username" name="username" placeholder="Введите ваш логин" required>
+            </div>
+        </div>
+
+        <div class="auth-row">
+            <div class="input-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" placeholder="Введите ваш пароль" required>
+            </div>
+        </div>
+
+        <div class="auth-row remember-row">
+            <div class="input-group">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Запомнить меня</label>
+            </div>
+        </div>
+
+        <div class="auth-row">
+            <button type="submit" class="auth-btn">Войти</button>
+        </div>
+    </form>
+
+    <div class="auth-row">
+        <a href="{{ url_for('register') }}" class="auth-link">Ещё нет аккаунта? Зарегистрироваться</a>
+    </div>
+</div>
 {% endblock %}

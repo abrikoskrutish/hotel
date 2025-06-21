@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/auth.css') }}">
+{% endblock %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="auth-row logo-row">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Логотип отеля" class="auth-logo">
+    </div>
+
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="auth-row">
+            <div class="input-group">
+                <label for="username">Логин</label>
+                <input type="text" id="username" name="username" placeholder="Придумайте логин" required minlength="4">
+            </div>
+        </div>
+
+        <div class="auth-row">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Введите ваш email" required>
+            </div>
+        </div>
+
+        <div class="auth-row">
+            <div class="input-group">
+                <label for="full_name">ФИО</label>
+                <input type="text" id="full_name" name="full_name" placeholder="Иванов Иван Иванович" required>
+            </div>
+        </div>
+
+        <div class="auth-row">
+            <div class="input-group">
+                <label for="phone">Телефон</label>
+                <input type="tel" id="phone" name="phone" placeholder="+79991234567" required>
+            </div>
+        </div>
+
+        <div class="auth-row">
+            <div class="input-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" placeholder="Придумайте пароль" required>
+            </div>
+        </div>
+
+        <div class="auth-row">
+            <div class="input-group">
+                <label for="confirm_password">Подтвердите пароль</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Повторите пароль" required>
+            </div>
+        </div>
+
+        <div class="auth-row">
+            <button type="submit" class="auth-btn">Зарегистрироваться</button>
+        </div>
+    </form>
+
+    <div class="auth-row">
+        <a href="{{ url_for('auth') }}" class="auth-link">Уже есть аккаунт? Войти</a>
+    </div>
+</div>
+{% endblock %}

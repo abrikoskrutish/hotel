@@ -9,12 +9,10 @@
 
 {% block content %}
 <div class="calendar-grid">
-    <!-- Первый ряд -->
     <div class="logo-row">
         <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Логотип" class="logo">
     </div>
 
-    <!-- Второй ряд -->
     <div class="calendar-container">
         <h2>Выберите даты проживания</h2>
         <input type="text" id="datepicker" placeholder="Выберите даты...">
@@ -30,9 +28,9 @@
         </div>
     </div>
 
-    <!-- Третий ряд -->
     <div class="action-row">
         <form id="booking-form" action="{{ url_for('process_booking') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="room_type" value="{{ session.get('selected_room') }}">
             <input type="hidden" name="check_in" id="check-in-input">
             <input type="hidden" name="check_out" id="check-out-input">
@@ -41,19 +39,17 @@
     </div> 
 </div>
 
-<!-- Flatpickr + локаль -->
+<!-- Flatpickr -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Заглушка для занятых дат (в реальном приложении заменить на fetch)
     const bookedDates = [
-        "2025-07-15", "2025-07-16", "2025-07-17",  // Отдельные даты
-        { from: "2025-08-01", to: "2025-08-10" }    // Диапазон
+        "2025-07-15", "2025-07-16", "2025-07-17",
+        { from: "2025-08-01", to: "2025-08-10" }
     ];
 
-    // Инициализация календаря
     const datepicker = flatpickr("#datepicker", {
         locale: "ru",
         mode: "range",
@@ -66,13 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const checkIn = selectedDates[0];
                 const checkOut = selectedDates[1];
                 const nights = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
-                
-                // Отображение
+
                 document.getElementById('selected-dates').textContent = 
                     `${datepicker.formatDate(checkIn, 'd.m.Y')} - ${datepicker.formatDate(checkOut, 'd.m.Y')}`;
                 document.getElementById('nights-count').textContent = nights;
                 
-                // Заполнение скрытых полей формы
                 document.getElementById('check-in-input').value = formatDate(checkIn);
                 document.getElementById('check-out-input').value = formatDate(checkOut);
             }
