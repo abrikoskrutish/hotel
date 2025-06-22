@@ -4,6 +4,39 @@
     padding: 2rem;
 }
 
+.account-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.edit-btn, .cancel-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: #4a6fa5;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.delete-btn, .cancel-booking-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-btn:hover {
+    background-color: #3a5a8f;
+}
+
+.delete-btn:hover, .cancel-booking-btn:hover {
+    background-color: #c82333;
+}
+
 .user-info, .bookings-list {
     background-color: #fff;
     padding: 2rem;
@@ -18,8 +51,167 @@
     margin-bottom: 1rem;
     border-radius: 4px;
     transition: box-shadow 0.3s;
+    position: relative;
 }
 
 .booking-card:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.booking-card.inactive {
+    opacity: 0.7;
+    background-color: #f8f9fa;
+}
+
+.no-bookings {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.edit-form {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.save-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.save-btn:hover {
+    background-color: #218838;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.edit-booking-btn, .cancel-booking-btn, .delete-booking-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.edit-booking-btn {
+    background-color: #ffc107;
+    color: #212529;
+    text-decoration: none;
+}
+
+.edit-booking-btn:hover {
+    background-color: #e0a800;
+}
+
+.cancel-booking-btn {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.cancel-booking-btn:hover {
+    background-color: #e36209;
+}
+
+.delete-booking-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-booking-btn:hover {
+    background-color: #c82333;
+}
+
+.booking-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.booking-form-container .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.booking-form-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.booking-form-container input,
+.booking-form-container select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.booking-form-container .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .booking-actions {
+        flex-direction: column;
+    }
+    
+    .booking-actions form, .booking-actions a {
+        width: 100%;
+    }
+    
+    .booking-actions button, .booking-actions a {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .account-actions, .form-actions {
+        flex-direction: column;
+    }
+    
+    .edit-btn, .delete-btn, .save-btn, .cancel-btn {
+        width: 100%;
+        text-align: center;
+    }
 }

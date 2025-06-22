@@ -9,6 +9,17 @@
 {% block content %}
 <div class="account-container">
     <h1>Личный кабинет</h1>
+    
+    <div class="account-actions">
+        <a href="{{ url_for('edit_account') }}" class="edit-btn">Редактировать профиль</a>
+        <form action="{{ url_for('delete_account') }}" method="POST" class="delete-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="delete-btn" onclick="return confirm('Вы уверены? Это действие нельзя отменить!')">
+                Удалить аккаунт
+            </button>
+        </form>
+    </div>
+
     <div class="user-info">
         <h2>Ваши данные</h2>
         <p><strong>Логин:</strong> {{ current_user.login }}</p>
@@ -21,16 +32,37 @@
         <h2>Ваши бронирования</h2>
         {% if bookings %}
             {% for booking in bookings %}
-                <div class="booking-card">
+                <!-- В блоке с бронированием заменим часть с booking-card на: -->
+                <div class="booking-card {% if not booking.is_active %}inactive{% endif %}">
                     <h3>Номер: {{ booking.room.name }}</h3>
                     <p>Даты: с {{ booking.check_in_date.strftime('%d.%m.%Y') }} по {{ booking.check_out_date.strftime('%d.%m.%Y') }}</p>
                     <p>Гостей: {{ booking.guests_count }}</p>
                     <p>Стоимость: {{ booking.total_price }} ₽</p>
                     <p>Статус: {{ 'Активно' if booking.is_active else 'Завершено' }}</p>
+                    
+                    <div class="booking-actions">
+                        {% if booking.is_active %}
+                        <a href="{{ url_for('edit_booking', booking_id=booking.id_booking) }}" 
+                        class="edit-booking-btn">Редактировать</a>
+                        
+                        <form action="{{ url_for('cancel_booking', booking_id=booking.id_booking) }}" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="cancel-booking-btn">Отменить</button>
+                        </form>
+                        {% endif %}
+                        
+                        <form action="{{ url_for('delete_booking', booking_id=booking.id_booking) }}" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="delete-booking-btn" 
+                                    onclick="return confirm('Удалить это бронирование?')">
+                                Удалить
+                            </button>
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
-            <p>У вас пока нет бронирований</p>
+            <p class="no-bookings">У вас пока нет бронирований</p>
         {% endif %}
     </div>
 </div>

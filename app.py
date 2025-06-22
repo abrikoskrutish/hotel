@@ -372,5 +372,142 @@ def save_room_after_dates():
         flash('Произошла ошибка при обработке вашего выбора', 'error')
         return redirect(url_for('rooms_after_dates'))
 
+@app.route('/account/edit', methods=['GET', 'POST'])
+@login_required
+def edit_account():
+    if request.method == 'POST':
+        try:
+            user = User.query.get(current_user.id_user)
+            
+            # Обновляем данные
+            user.fuo = request.form.get('full_name', user.fuo)
+            user.phone = request.form.get('phone', user.phone)
+            user.email = [request.form.get('email')] if request.form.get('email') else user.email
+            
+            # Если введен новый пароль
+            new_password = request.form.get('new_password')
+            if new_password:
+                if len(new_password) < 8:
+                    flash('Пароль должен содержать минимум 8 символов', 'error')
+                else:
+                    user.set_password(new_password)
+            
+            db.session.commit()
+            flash('Данные успешно обновлены', 'success')
+            return redirect(url_for('account'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Ошибка при обновлении данных: {str(e)}', 'error')
+            return redirect(url_for('edit_account'))
+    
+    return render_template('edit_account.html')
+
+@app.route('/account/delete', methods=['POST'])
+@login_required
+def delete_account():
+    try:
+        # Удаляем все бронирования пользователя
+        Booking.query.filter_by(user_id=current_user.id_user).delete()
+        
+        # Удаляем сам аккаунт
+        user = User.query.get(current_user.id_user)
+        db.session.delete(user)
+        db.session.commit()
+        
+        logout_user()
+        flash('Ваш аккаунт успешно удален', 'success')
+        return redirect(url_for('index'))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Ошибка при удалении аккаунта: {str(e)}', 'error')
+        return redirect(url_for('account'))
+
+@app.route('/cancel-booking/<int:booking_id>', methods=['POST'])
+@login_required
+def cancel_booking(booking_id):
+    try:
+        booking = Booking.query.filter_by(id_booking=booking_id, user_id=current_user.id_user).first()
+        if not booking:
+            flash('Бронирование не найдено', 'error')
+            return redirect(url_for('account'))
+        
+        booking.is_active = False
+        db.session.commit()
+        flash('Бронирование успешно отменено', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Ошибка при отмене бронирования: {str(e)}', 'error')
+    
+    return redirect(url_for('account'))
+
+# Редактирование бронирования
+@app.route('/booking/edit/<int:booking_id>', methods=['GET', 'POST'])
+@login_required
+def edit_booking(booking_id):
+    booking = Booking.query.filter_by(id_booking=booking_id, user_id=current_user.id_user).first_or_404()
+    
+    if request.method == 'POST':
+        try:
+            # Получаем данные из формы
+            check_in = request.form.get('check_in')
+            check_out = request.form.get('check_out')
+            guests = request.form.get('guests', 1)
+            room_type = request.form.get('room_type')
+            
+            # Валидация дат
+            check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
+            check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
+            
+            if check_out_date <= check_in_date:
+                flash('Дата выезда должна быть после даты заезда', 'error')
+                return redirect(url_for('edit_booking', booking_id=booking_id))
+            
+            # Обновляем бронирование
+            booking.check_in_date = check_in_date
+            booking.check_out_date = check_out_date
+            booking.guests_count = guests
+            
+            # Если изменили тип комнаты
+            if booking.room.room_type != room_type:
+                new_room = Room.query.filter_by(room_type=room_type).first()
+                if new_room:
+                    booking.room_id = new_room.id_room
+                    booking.total_price = new_room.price_per_night * (check_out_date - check_in_date).days
+            
+            db.session.commit()
+            flash('Бронирование успешно обновлено', 'success')
+            return redirect(url_for('account'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Ошибка при обновлении бронирования: {str(e)}', 'error')
+            return redirect(url_for('edit_booking', booking_id=booking_id))
+    
+    # Для GET запроса
+    rooms = Room.query.all()
+    return render_template('edit_booking.html', 
+                         booking=booking,
+                         rooms=rooms,
+                         check_in=booking.check_in_date.strftime('%Y-%m-%d'),
+                         check_out=booking.check_out_date.strftime('%Y-%m-%d'))
+
+# Удаление бронирования
+@app.route('/booking/delete/<int:booking_id>', methods=['POST'])
+@login_required
+def delete_booking(booking_id):
+    try:
+        booking = Booking.query.filter_by(id_booking=booking_id, user_id=current_user.id_user).first_or_404()
+        db.session.delete(booking)
+        db.session.commit()
+        flash('Бронирование успешно удалено', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Ошибка при удалении бронирования: {str(e)}', 'error')
+    
+    return redirect(url_for('account'))
+
 if __name__ == "__main__":
     app.run(debug=True)
